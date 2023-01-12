@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: . # dockerfile 이 있는 경로
+      args:
+        - DEV=true # DEV 환경변수 true 로 설정
+    ports:
+      - '8080:8000'
+    volumes:
+      - ./app:/app
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"

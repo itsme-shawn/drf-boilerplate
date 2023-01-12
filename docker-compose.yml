@@ -12,3 +12,22 @@ services:
       - ./app:/app
     command: >
       sh -c "python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=db # service 이름
+      - DB_NAME=devdb
+      - DB_USER=devuser
+      - DB_PASS=devpass
+    depends_on:
+      - db # db 서비스가 먼저 실행되도록 설정
+
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - dev-db-data:/var/lib/postgressql/data
+    environment:
+      - POSTGRES_DB=devdb
+      - POSTGRES_USER=devuser
+      - POSTGRES_PASSWORD=devpass
+
+volumes:
+  dev-db-data: # docker-compose 가 default 값으로 세팅해줌

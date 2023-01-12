@@ -7,7 +7,7 @@ services:
       args:
         - DEV=true # DEV 환경변수 true 로 설정
     ports:
-      - '8080:8000'
+      - '8000:8000'
     volumes:
       - ./app:/app
     command: >

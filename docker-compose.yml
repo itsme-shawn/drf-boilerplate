@@ -14,9 +14,9 @@ services:
       sh -c "python manage.py runserver 0.0.0.0:8000"
     environment:
       - DB_HOST=db # service 이름
-      - DB_NAME=devdb
+      - DB_NAME=devdb # 환경변수 원래는 .env 파일에 넣어서 사용
       - DB_USER=devuser
-      - DB_PASS=devpass
+      - DB_PASSWORD=devpass
     depends_on:
       - db # db 서비스가 먼저 실행되도록 설정
 

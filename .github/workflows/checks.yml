@@ -17,8 +17,9 @@ jobs:
       - name: Create env file
         run: |
           pwd
-          echo "${{ secrets.ENV_DEV }}" > ./.env.dev
+          echo "${{ secrets.ENV_DEV }}" > .env.dev
           ls -al
+          cat .env.dev
       - name: Test
         run: docker-compose run --rm app sh -c "python manage.py wait_for_db && python manage.py test"
     # - name: Lint

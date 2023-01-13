@@ -15,12 +15,17 @@ class Command(BaseCommand):
         """Entrypoint for command"""
         self.stdout.write("Waiting for database...")
         db_up = False
+        check_count = 0
         while db_up is False:
+            if check_count > 6:
+                self.stdout.write(self.style.ERROR("Database refused connection"))
+                return
             try:
                 self.check(databases=["default"])  # type: ignore
                 db_up = True
             except (Psycopg2OperationalError, OperationalError):
                 self.stdout.write("Database unavailable, waiting 1 second...")
                 time.sleep(1)
+                check_count += 1
 
         self.stdout.write(self.style.SUCCESS("Database available!"))

@@ -4,30 +4,25 @@ services:
   app:
     build:
       context: . # dockerfile 이 있는 경로
-      args:
-        - DEV=true # DEV 환경변수 true 로 설정
+      args: # dockerfile 에서 사용할 인자
+        - DEV=true # DEV 인자 true 로 설정
     ports:
       - '8000:8000'
     volumes:
       - ./app:/app
     command: >
       sh -c "python manage.py runserver 0.0.0.0:8000"
+    env_file: .env.dev
     environment:
-      - DB_HOST=db # service 이름
-      - DB_NAME=devdb # 환경변수 원래는 .env 파일에 넣어서 사용
-      - DB_USER=devuser
-      - DB_PASSWORD=devpass
+      - ENV=development
     depends_on:
       - db # db 서비스가 먼저 실행되도록 설정
 
   db:
     image: postgres:13-alpine
+    env_file: .env.dev
     volumes:
       - dev-db-data:/var/lib/postgressql/data
-    environment:
-      - POSTGRES_DB=devdb
-      - POSTGRES_USER=devuser
-      - POSTGRES_PASSWORD=devpass
 
 volumes:
   dev-db-data: # docker-compose 가 default 값으로 세팅해줌

@@ -13,6 +13,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Create env file
         run: |
+          pwd
           echo "${{ secrets.ENV_DEV }}" > .env.dev
       - name: Checkout
         uses: actions/checkout@v2

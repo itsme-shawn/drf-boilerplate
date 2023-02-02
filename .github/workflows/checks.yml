@@ -16,14 +16,9 @@ jobs:
         uses: actions/checkout@v2
       - name: Create env file
         run: |
-          echo POSTGRES_DB=${{secrets.POSTGRES_DB}} > .env.dev
-          echo POSTGRES_USER=${{secrets.POSTGRES_USER}} > .env.dev
-          echo POSTGRES_PASSWORD=${{secrets.POSTGRES_PASSWORD}} > .env.dev
-          echo DB_HOST=${{secrets.DB_HOST}} > .env.dev
-          echo DB_NAME=${{secrets.DB_NAME}} > .env.dev
-          echo DB_USER=${{secrets.DB_USER}} > .env.dev
-          echo DB_PASSWORD=${{secrets.DB_PASSWORD}} > .env.dev
-          echo DB_PORT=${{secrets.DB_PORT}} > .env.dev
+          echo "${{secrets.ENV_DEV}}" > .env.dev
+          ls -al
+          cat .env.dev
       - name: Test
         run: docker-compose run --rm app sh -c "python manage.py wait_for_db && python manage.py test"
     # - name: Lint

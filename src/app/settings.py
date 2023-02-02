@@ -24,6 +24,8 @@ print("ENV: ", ENV)
 if ENV == "local":
     load_dotenv(f"{BASE_DIR}/../.env.local")
 
+print("DB_NAME: ", os.environ.get("DB_NAME", ""))
+
 # 나머지 환경은 docker-compose 에서 환경변수 세팅해줌
 
 

@@ -19,10 +19,12 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 개발환경 별 .env 분리
-if os.environ.get("ENV") == "development":
-    pass  # docker-compose 에서 환경변수 세팅해줌
-else:
-    load_dotenv("../.env.local")
+ENV = os.environ.get("ENV", "local")
+print("ENV: ", ENV)
+if ENV == "local":
+    load_dotenv(f"{BASE_DIR}/../.env.local")
+
+# 나머지 환경은 docker-compose 에서 환경변수 세팅해줌
 
 
 # Quick-start development settings - unsuitable for production

@@ -26,7 +26,6 @@ services:
     volumes:
       - dev-db-data:/var/lib/postgressql/data
     ports:
-      - '5433:5432'
-
+      - '5433:5432' # 로컬 충돌 때문에 변경
 volumes:
   dev-db-data: # docker-compose 가 default 값으로 세팅해줌

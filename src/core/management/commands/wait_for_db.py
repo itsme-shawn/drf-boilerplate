@@ -17,7 +17,7 @@ class Command(BaseCommand):
         db_up = False
         check_count = 0
         while db_up is False:
-            if check_count > 20:
+            if check_count > 6:
                 self.stdout.write(self.style.ERROR("Database refused connection"))
                 return
             try:

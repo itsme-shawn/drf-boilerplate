@@ -28,7 +28,7 @@ drf(django restframework) 로 프로젝트를 시작하기 위한 보일러플�
 - [ ] settings.py 분리
 - [x] dockerfile
 - [x] docker-compose
-- [ ] github action (CI/CD)
+- [ ] github action
   - [x] test
   - [x] linting
   - [ ] deploy

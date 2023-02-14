@@ -2,7 +2,8 @@
 Serializers for the user API View
 """
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate, get_user_model
+from django.utils.translation import gettext as _
 from rest_framework import serializers
 
 
@@ -12,7 +13,39 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["email", "password", "name"]
         extra_kwargs = {"password": {"write_only": True, "min_length": 5}}
 
+    # create_user 함수를 써야하므로 오버라이딩
     def create(self, validated_data):
         """password 받아서 validation 통과하면 유저 create & return"""
         return get_user_model().objects.create_user(**validated_data)
-        # create_user 함수를 써야하므로 오버라이딩
+
+    def update(self, instance, validated_data):
+        """유저 정보 update 후 return"""
+        password = validated_data.pop("password", None)
+        user = super().update(instance, validated_data)
+
+        if password:
+            user.set_password(password)
+            user.save()
+
+        return user
+
+
+class AuthTokenSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(trim_whitespace=False)
+
+    def validate(self, attrs):
+        """user validate and authenticate"""
+        email = attrs.get("email")
+        password = attrs.get("password")
+
+        user = authenticate(
+            request=self.context.get("request"), username=email, password=password
+        )
+
+        if not user:
+            msg = _("Unable to authenticate with provided credentials.")
+            raise serializers.ValidationError(msg, code="authorization")
+
+        attrs["user"] = user
+        return attrs

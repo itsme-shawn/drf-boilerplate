@@ -8,12 +8,10 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-CREATE_USER_URL = reverse("user:create")
+from .utils import *
 
-# 유틸함수
-def create_user(**params):
-    """create된 유저를 return함"""
-    return get_user_model().objects.create_user(**params)  # type: ignore
+CREATE_USER_URL = reverse("user:create")
+ME_URL = reverse("user:me")
 
 
 class PublicUserApiTests(TestCase):
@@ -62,3 +60,45 @@ class PublicUserApiTests(TestCase):
         # DB에 저장 안 됐는지 확인
         user_exists = get_user_model().objects.filter(email=payload["email"]).exists()
         self.assertFalse(user_exists)
+
+    def test_retrieve_user_unauthorized(self):
+        """인증되지 않은 유저가 프로필을 조회하면 401 코드 리턴"""
+        res = self.client.get(ME_URL)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PrivateUserApiTests(TestCase):
+    """인증이 필요한 로직 테스트"""
+
+    def setUp(self):
+        self.user = create_user(
+            email="test@example.com",
+            password="testpass123",
+            name="Test Name",
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_retrieve_profile_success(self):
+        """로그인 유저의 프로필 조회 테스트"""
+        res = self.client.get(ME_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, {"name": self.user.name, "email": self.user.email})
+
+    def test_post_me_not_allowed(self):
+        """프로필 api에 POST 요청이 막혀있는지 확인하는 테스트"""
+        res = self.client.post(ME_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_update_user_profile(self):
+        """인증된 유저에 대해 프로필 업데이트 테스트"""
+        payload = {"name": "updated name", "password": "newpassword"}
+
+        res = self.client.patch(ME_URL, payload)
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.name, payload["name"])
+        self.assertTrue(self.user.check_password(payload["password"]))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
